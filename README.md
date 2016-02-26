@@ -7,7 +7,7 @@ Just put it before angular.js, then everything work.
 <![endif]-->
 <script type="text/javascript" src="/js/angularjs/angular.min.js"></script>
 ```
-Do not put it after es5-sham.js, otherwisw you will lost the magic.
+Do not put it after es5-shim.js or other polyfill, otherwise you will lost the magic.
 
 ###suport version
 Only support angular.js v1.4.7
