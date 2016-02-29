@@ -1,3 +1,5 @@
+//please put this polyfill before your other polyfill
+
 
 if(typeof String.prototype.trim !== 'function') {
     String.prototype.trim = function() {
@@ -43,7 +45,7 @@ if (!Array.isArray) {
         return Object.prototype.toString.call(arg) === '[object Array]';
     };
 }
-// From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
 if (!Object.keys) {
     Object.keys = (function() {
         'use strict';
@@ -84,6 +86,8 @@ if (!Object.keys) {
         };
     }());
 }
+
+//
 if (!window.XMLHttpRequest) {
     //console.log('XMLHttpRequest not enabled');
     window.XMLHttpRequest = function () {
@@ -155,27 +159,29 @@ XMLHttpRequest.prototype.send = function () {
     sendFn.apply(this, arguments);
 };
 
+//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create
+if (typeof Object.create != 'function') {
+    Object.create = (function() {
+        var Temp = function() {};
+        return function (prototype) {
+            if (arguments.length > 1) {
+                throw Error('Second argument not supported');
+            }
+            if (typeof prototype != 'object') {
+                throw TypeError('Argument must be an object');
+            }
+            Temp.prototype = prototype;
+            var result = new Temp();
+            Temp.prototype = null;
+            return result;
+        };
+    })();
+}
 
-// ------ Object.create ------
-// force Object.create to this implementation for IE8
-// (es5-sham version doesn't work in this instance)
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create
-Object.create = (function () {
-    var Object = function () {};
-    return function (prototype) {
-        if (arguments.length > 1) {
-            throw Error('Second argument not supported');
-        }
-        if (typeof prototype != 'object') {
-            throw TypeError('Argument must be an object');
-        }
-        Object.prototype = prototype;
-        var result = new Object();
-        Object.prototype = null;
-        return result;
-    };
-})();
-
+//me
+if(Node === undefined){
+    var Node = function(){};
+}
 
 // ------ Object.getPrototypeOf ------
 // http://stackoverflow.com/a/15851520/674863
@@ -188,56 +194,7 @@ if (typeof Object.getPrototypeOf !== 'function') {
     };
 }
 
-// textContent shim using Sizzle / jQuery get & set text methods
-(function () {
 
-    var getText = function (elem) {
-        var node,
-            ret = '',
-            i = 0,
-            nodeType = elem.nodeType;
-
-        if (!nodeType) {
-            // If no nodeType, this is expected to be an array
-            while ((node = elem[i++])) {
-                // Do not traverse comment nodes
-                ret += getText(node);
-            }
-        } else if (nodeType === 1 || nodeType === 9 || nodeType === 11) {
-            // Traverse its children
-            for (elem = elem.firstChild; elem; elem = elem.nextSibling) {
-                ret += getText(elem);
-            }
-        } else if (nodeType === 3 || nodeType === 4) {
-            return elem.nodeValue;
-        }
-        // Do not include comment or processing instruction nodes
-
-        return ret;
-    };
-
-    if (Object.defineProperty && Object.getOwnPropertyDescriptor &&
-        Object.getOwnPropertyDescriptor(Element.prototype, 'textContent') &&
-        !Object.getOwnPropertyDescriptor(Element.prototype, 'textContent').get) {
-        var innerText = Object.getOwnPropertyDescriptor(Element.prototype, 'innerText');
-        Object.defineProperty(Element.prototype, 'textContent', {
-            get: function () {
-                return getText(this);
-            },
-            set: function (x) {
-                //var $this = $(this);
-                //return $this.empty().append(($this[0] && $this[0].ownerDocument || document).createTextNode(x));
-                // empty
-                while (this.hasChildNodes()) {
-                    this.removeChild(this.lastChild);
-                }
-                // add text node
-                return this.appendChild((this && this.ownerDocument || document).createTextNode(x));
-            }
-        });
-    }
-
-})();
 
 /**
  * @license addEventListener polyfill 1.0 / Eirik Backer / MIT Licence
@@ -369,3 +326,15 @@ if (typeof Object.getPrototypeOf !== 'function') {
         }
     }
 })(window, document, 'x-ms-event-listeners');
+
+//add .ng-hide css style, only work in IE
+var css = '.ng-hide {display: none !important;}';
+var head = document.head || document.getElementsByTagName('head')[0];
+var style = document.createElement('style');
+style.type = 'text/css';
+if (style.styleSheet){
+    style.styleSheet.cssText = css;
+} else {
+    style.appendChild(document.createTextNode(css));
+}
+head.appendChild(style);
