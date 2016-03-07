@@ -1,6 +1,6 @@
 //please put this polyfill before your other polyfill
 
-
+//core polyfill
 if(typeof String.prototype.trim !== 'function') {
     String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g, '');
@@ -194,8 +194,6 @@ if (typeof Object.getPrototypeOf !== 'function') {
     };
 }
 
-
-
 /**
  * @license addEventListener polyfill 1.0 / Eirik Backer / MIT Licence
  * https://gist.github.com/2864711/946225eb3822c203e8d6218095d888aac5e1748e
@@ -338,3 +336,26 @@ if (style.styleSheet){
     style.appendChild(document.createTextNode(css));
 }
 head.appendChild(style);
+
+/* angular-sanitize polyfill */
+
+//IE8 use innerText instead of textContent
+//https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent
+if (Object.defineProperty
+    && Object.getOwnPropertyDescriptor
+    && Object.getOwnPropertyDescriptor(Element.prototype, "textContent")
+    && !Object.getOwnPropertyDescriptor(Element.prototype, "textContent").get) {
+    (function() {
+        var innerText = Object.getOwnPropertyDescriptor(Element.prototype, "innerText");
+        Object.defineProperty(Element.prototype, "textContent",
+            {
+                get: function() {
+                    return innerText.get.call(this);
+                },
+                set: function(s) {
+                    return innerText.set.call(this, s);
+                }
+            }
+        );
+    })();
+}

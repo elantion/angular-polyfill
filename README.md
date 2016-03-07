@@ -10,4 +10,5 @@ Just put it before angular.js, then everything works fine. Jquery is unnecessary
 Do not put it after es5-shim.js or other polyfill, otherwise you will lost the magic.
 
 ###suport version
-Tested with official angular.js v1.4.9
+- angular v1.4.*
+- angular-sanitize v1.5.*
