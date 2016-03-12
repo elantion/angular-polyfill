@@ -12,3 +12,6 @@ Do not put it after es5-shim.js or other polyfill, otherwise you will lost the m
 ###suport version
 - angular v1.4.*
 - angular-sanitize v1.5.*
+
+###Bug
+- not support ng-repeat in <select> tag
